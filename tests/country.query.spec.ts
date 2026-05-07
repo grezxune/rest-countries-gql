@@ -1,7 +1,6 @@
 import { describe, expect, it, vi } from 'vitest';
 import { type AppContext } from '../src/context.js';
 import { type RestCountryRecord, UpstreamServiceError } from '../src/datasources/rest-countries-api.js';
-import { type Region } from '../src/modules/country/country.types.js';
 import { createServer } from '../src/server.js';
 
 const countryQuery = /* GraphQL */ `
@@ -22,14 +21,6 @@ const countryQuery = /* GraphQL */ `
   }
 `;
 
-const countriesByRegionQuery = /* GraphQL */ `
-  query CountriesByRegion($region: Region!, $limit: Int) {
-    countriesByRegion(region: $region, limit: $limit) {
-      code
-      name
-    }
-  }
-`;
 
 const france: RestCountryRecord = {
   cca2: 'fr',
@@ -44,41 +35,15 @@ const france: RestCountryRecord = {
   },
 };
 
-const germany: RestCountryRecord = {
-  cca2: 'de',
-  name: {
-    common: 'Germany',
-  },
-  capital: ['Berlin'],
-  region: 'Europe',
-  population: 83240525,
-  languages: {
-    deu: 'German',
-  },
-};
 
-const austria: RestCountryRecord = {
-  cca2: 'at',
-  name: {
-    common: 'Austria',
-  },
-  capital: ['Vienna'],
-  region: 'Europe',
-  population: 9104772,
-  languages: {
-    deu: 'German',
-  },
-};
 
 const createMockContext = () => {
   const getCountryByCode = vi.fn(async (_code: string) => null as RestCountryRecord | null);
-  const getCountriesByRegion = vi.fn(async (_region: Region) => [] as RestCountryRecord[]);
 
   const context: AppContext = {
     dataSources: {
       restCountriesApi: {
         getCountryByCode,
-        getCountriesByRegion,
       },
     },
   };
@@ -86,7 +51,6 @@ const createMockContext = () => {
   return {
     context,
     getCountryByCode,
-    getCountriesByRegion,
   };
 };
 
@@ -188,39 +152,6 @@ describe('country queries', () => {
           message: 'REST Countries is currently unavailable.',
         },
       },
-    });
-  });
-
-  it('sorts countries by name before applying the limit', async () => {
-    const { context, getCountriesByRegion } = createMockContext();
-    getCountriesByRegion.mockResolvedValue([germany, france, austria]);
-
-    const result = await executeSingle(countriesByRegionQuery, { region: 'EUROPE', limit: 2 }, context);
-
-    expect(result.errors).toBeUndefined();
-    expect(result.data).toEqual({
-      countriesByRegion: [
-        {
-          code: 'AT',
-          name: 'Austria',
-        },
-        {
-          code: 'FR',
-          name: 'France',
-        },
-      ],
-    });
-  });
-
-  it('treats a negative limit as zero', async () => {
-    const { context, getCountriesByRegion } = createMockContext();
-    getCountriesByRegion.mockResolvedValue([germany, france, austria]);
-
-    const result = await executeSingle(countriesByRegionQuery, { region: 'EUROPE', limit: -3 }, context);
-
-    expect(result.errors).toBeUndefined();
-    expect(result.data).toEqual({
-      countriesByRegion: [],
     });
   });
 });

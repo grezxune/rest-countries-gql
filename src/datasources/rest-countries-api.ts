@@ -1,13 +1,4 @@
 import { z } from 'zod';
-import { type Region } from '../modules/country/country.types.js';
-
-const regionToApiRegion: Record<Region, string> = {
-  AFRICA: 'africa',
-  AMERICAS: 'americas',
-  ASIA: 'asia',
-  EUROPE: 'europe',
-  OCEANIA: 'oceania',
-};
 
 const RestCountrySchema = z.object({
   cca2: z.string(),
@@ -27,7 +18,6 @@ export type RestCountryRecord = z.infer<typeof RestCountrySchema>;
 
 export interface RestCountriesApiContract {
   getCountryByCode(code: string): Promise<RestCountryRecord | null>;
-  getCountriesByRegion(region: Region): Promise<RestCountryRecord[]>;
 }
 
 export class UpstreamServiceError extends Error {
@@ -46,10 +36,6 @@ export class RestCountriesApi implements RestCountriesApiContract {
     });
 
     return countries[0] ?? null;
-  }
-
-  async getCountriesByRegion(region: Region): Promise<RestCountryRecord[]> {
-    return this.fetchCollection(`/region/${regionToApiRegion[region]}`);
   }
 
   private async fetchCollection(path: string, options: { allowNotFound?: boolean } = {}): Promise<RestCountryRecord[]> {

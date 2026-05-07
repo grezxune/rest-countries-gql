@@ -1,12 +1,4 @@
 export const countryTypeDefs = /* GraphQL */ `
-  enum Region {
-    AFRICA
-    AMERICAS
-    ASIA
-    EUROPE
-    OCEANIA
-  }
-
   enum CountryLookupErrorCode {
     INVALID_INPUT
     NOT_FOUND
@@ -33,6 +25,5 @@ export const countryTypeDefs = /* GraphQL */ `
 
   extend type Query {
     country(code: ID!): CountryLookupResult!
-    countriesByRegion(region: Region!, limit: Int = 5): [Country!]!
   }
 `;

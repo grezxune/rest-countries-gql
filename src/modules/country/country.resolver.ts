@@ -1,14 +1,10 @@
 import { type AppContext } from '../../context.js';
-import { type CountryLookupResult, type CountryModel, type Region } from './country.types.js';
+import { type CountryLookupResult, type CountryModel } from './country.types.js';
 
 interface CountryQueryArgs {
   code: string;
 }
 
-interface CountriesByRegionArgs {
-  region: Region;
-  limit?: number | null;
-}
 
 export const countryResolvers = {
   Query: {
@@ -24,9 +20,7 @@ export const countryResolvers = {
           country: null,
           error: {
             code: 'INVALID_INPUT',
-            message: 'TODO: return a clearer invalid-input message',
-          },
-        };
+            message: 'TODO: return a clearer invalid-input message' } };
       }
 
       // TODO:
@@ -36,20 +30,6 @@ export const countryResolvers = {
       // - return the mapped country on success
       throw new Error('TODO: implement Query.country');
     },
-
-    countriesByRegion: async (
-      _parent: unknown,
-      _arguments: CountriesByRegionArgs,
-      _context: AppContext,
-    ): Promise<CountryModel[]> => {
-      // TODO:
-      // - fetch countries for the requested region
-      // - map each DTO into the GraphQL model
-      // - sort by name
-      // - apply limit after sorting
-      // - treat negative limits as 0
-      throw new Error('TODO: implement Query.countriesByRegion');
-    },
   },
 
   Country: {
@@ -58,6 +38,4 @@ export const countryResolvers = {
       // - derive a readable summary from the mapped CountryModel
       // - include name, code, region, population, and capital/fallback
       throw new Error('TODO: implement Country.summary');
-    },
-  },
-};
+    } } };

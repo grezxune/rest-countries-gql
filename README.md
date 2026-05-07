@@ -31,7 +31,6 @@ https://restcountries.com/v3.1
 The schema exposes:
 
 - `country(code: ID!): CountryLookupResult!`
-- `countriesByRegion(region: Region!, limit: Int = 5): [Country!]!`
 
 The public `Country` type should stay intentionally small:
 
@@ -81,17 +80,7 @@ Implement the `country` query resolver with the following behavior:
   - `country: null`
   - `error.code: UPSTREAM_ERROR`
 
-### 2. `countriesByRegion(region, limit)`
-
-Implement the `countriesByRegion` query resolver with the following behavior:
-
-- fetch countries for the requested region through the datasource
-- map each REST country into the GraphQL model
-- sort the final list alphabetically by `name`
-- apply `limit` after sorting
-- treat negative limits as `0`
-
-### 3. `Country.summary`
+### 2. `Country.summary`
 
 Implement a computed GraphQL field called `summary`.
 
@@ -105,7 +94,7 @@ It should be derived from the mapped `Country` object and should include:
 
 You do not need to match a perfect prose style, but the output should read naturally and be deterministic.
 
-### 4. REST DTO Mapping
+### 3. REST DTO Mapping
 
 Implement the mapper in `country.mapper.ts`.
 
@@ -179,12 +168,6 @@ query Example {
       code
       message
     }
-  }
-
-  countriesByRegion(region: EUROPE, limit: 3) {
-    code
-    name
-    summary
   }
 }
 ```
